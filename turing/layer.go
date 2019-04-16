@@ -55,3 +55,13 @@ func (l Layer) ToString() (layer string, position string) {
 	position += "               ^"
 	return
 }
+
+func (l Layer) Count(r rune) int {
+	count := 0
+	for _, v := range l.layers {
+		if v == r {
+			count++
+		}
+	}
+	return count
+}

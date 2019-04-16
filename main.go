@@ -108,6 +108,7 @@ func main() {
 		fmt.Printf("%s\n", lString)
 		fmt.Printf("%s\n", pString)
 	}
+	fmt.Printf("Result: %v\n", layers[1].Count(util.StringToRune("1", 0)))
 
 }
 
