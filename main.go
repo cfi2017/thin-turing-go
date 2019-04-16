@@ -32,7 +32,7 @@ func main() {
 	states := make([]turing.State, 6)
 	states[5] = turing.State{Accepted: true, Functions: make(map[string]turing.StateFunction, 0)}
 	states[4] = turing.State{Accepted: false, Functions: make(map[string]turing.StateFunction, 2)}
-	states[3] = turing.State{Accepted: false, Functions: make(map[string]turing.StateFunction, 2)}
+	states[3] = turing.State{Accepted: false, Functions: make(map[string]turing.StateFunction, 3)}
 	states[2] = turing.State{Accepted: false, Functions: make(map[string]turing.StateFunction, 2)}
 	states[1] = turing.State{Accepted: false, Functions: make(map[string]turing.StateFunction, 2)}
 	states[0] = turing.State{Accepted: false, Functions: make(map[string]turing.StateFunction, 2)}
