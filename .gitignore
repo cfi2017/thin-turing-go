@@ -1,3 +1,5 @@
 **/*.txt
 bin/
 .idea/
+
+**/*.gif

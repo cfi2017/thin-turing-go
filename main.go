@@ -14,6 +14,7 @@ func main() {
 
 	defer timeTrack(time.Now(), "turing")
 
+	generateGif := flag.String("gif", "", "generate gif to specified file")
 	inFile := flag.String("input", "", "input file")
 	inputRef := flag.String("text", "11011", "text input")
 	debug := flag.Bool("debug", false, "debug mode")
@@ -25,6 +26,10 @@ func main() {
 		dat, err := ioutil.ReadFile(*inFile)
 		check(err)
 		input = string(dat)
+	}
+
+	if *generateGif != "" {
+		fmt.Println("GIF output is limited to the first 100 frames.");
 	}
 
 	fmt.Printf("Debug: %v\n", *debug)
@@ -97,7 +102,7 @@ func main() {
 		return *_state5
 	}
 
-	machine := turing.MakeMachine(2, states, *debug)
+	machine := turing.MakeMachine(2, states, *debug, *generateGif != "", *generateGif)
 	layers, state, iteration := machine.Run(input)
 	fmt.Printf("Word was accepted: %v\n", state.Accepted)
 
