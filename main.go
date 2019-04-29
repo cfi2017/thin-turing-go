@@ -18,6 +18,10 @@ func main() {
 	inFile := flag.String("input", "", "input file")
 	inputRef := flag.String("text", "11011", "text input")
 	debug := flag.Bool("debug", false, "debug mode")
+	fast := flag.Bool("fast", false, "fast mode")
+	delay := flag.Int("delay", 0, "delay in ms")
+	maxIterations := flag.Int("iterations", 200000000, "maximum iteration count")
+	stack := flag.Bool("stack", false, "stack output")
 	flag.Parse()
 	input := *inputRef
 
@@ -102,7 +106,15 @@ func main() {
 		return *_state5
 	}
 
-	machine := turing.MakeMachine(2, states, *debug, *generateGif != "", *generateGif)
+	machine := turing.MakeMachine(2,
+		states,
+		*debug,
+		*fast,
+		*delay,
+		*maxIterations,
+		*stack,
+		*generateGif != "",
+		*generateGif)
 	layers, state, iteration := machine.Run(input)
 	fmt.Printf("Word was accepted: %v\n", state.Accepted)
 

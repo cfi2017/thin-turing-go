@@ -1,6 +1,7 @@
 package turing
 
 import (
+	"bufio"
 	"fmt"
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/basicfont"
@@ -12,6 +13,7 @@ import (
 	"image/gif"
 	"log"
 	"os"
+	"time"
 )
 
 type TuringMachine struct {
@@ -20,14 +22,30 @@ type TuringMachine struct {
 	debug   bool
 	gifPath string
 	gif bool
+	fast bool
+	maxIterations int
+	stack bool
+	delay time.Duration
 }
 
-func MakeMachine(layerCount int, states []State, debug bool, gif bool, gifPath string) TuringMachine {
+func MakeMachine(layerCount int,
+	states []State,
+	debug bool,
+	fast bool,
+	delay int,
+	maxIterations int,
+	stack bool,
+	gif bool,
+	gifPath string) TuringMachine {
 	machine := TuringMachine{}
 	machine.layers = make([]Layer, layerCount)
 	machine.states = states
 	machine.debug = debug
 	machine.gif = gif
+	machine.fast = fast
+	machine.stack = stack
+	machine.maxIterations = maxIterations
+	machine.delay = time.Duration(delay)
 	machine.gifPath = gifPath
 	for i := 0; i < layerCount; i++ {
 		machine.layers[i] = New("")
@@ -49,17 +67,25 @@ func (machine TuringMachine) Run(input string) ([]Layer, State, int) {
 		defer generateGif(machine.gifPath, &images, &delays)
 	}
 
+	var reader *bufio.Reader
+	if !machine.fast && machine.debug {
+		reader = bufio.NewReader(os.Stdin)
+	}
+
 	machine.layers[0] = New(input)
 
 	state := machine.states[0]
 	next, nextExists := state.NextFn(machine.layers)
 	iteration := 0
 	for nextExists {
-		if iteration == 200000000 {
+		if iteration == machine.maxIterations {
 			break;
 		}
-		if machine.debug {
+		if !machine.fast {
 
+			if machine.stack {
+				fmt.Print("\033[H\033[2J")
+			}
 			fmt.Printf("Iteration #%v\n", iteration)
 			for index, layer := range machine.layers {
 				lString, pString := layer.ToString()
@@ -99,9 +125,15 @@ func (machine TuringMachine) Run(input string) ([]Layer, State, int) {
 			images = append(images, img)
 			delays = append(delays, 25)
 		}
+		if machine.debug && !machine.fast {
+			reader.ReadByte()
+		}
 		state = next(&machine.layers)
 		next, nextExists = state.NextFn(machine.layers)
 		iteration++
+		if !machine.fast && machine.delay != 0 {
+			time.Sleep(time.Millisecond * machine.delay)
+		}
 	}
 	if nextExists {
 		fmt.Println("Exceeded maximum iteration count. Exiting.")
