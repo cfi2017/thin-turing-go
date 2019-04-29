@@ -8,8 +8,10 @@ type State struct {
 }
 
 func (s State) NextFn(layers []Layer) (next StateFunction, exists bool) {
-	symbolA, symbolB := layers[0].Current(), layers[1].Current()
-	currentSymbols := string(symbolA) + string(symbolB)
-	next, exists = s.Functions[currentSymbols]
+	state := ""
+	for _, layer := range layers {
+		state += string(layer.Current())
+	}
+	next, exists = s.Functions[state]
 	return
 }

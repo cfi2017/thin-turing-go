@@ -10,6 +10,7 @@ import (
 	"image/color/palette"
 	"image/draw"
 	"image/gif"
+	"log"
 	"os"
 )
 
@@ -41,7 +42,7 @@ func (machine TuringMachine) Run(input string) ([]Layer, State, int) {
 	var bounds image.Rectangle
 	var col color.Color
 	if machine.gif {
-		bounds = image.Rect(0, 0, 300, len(machine.layers)*30 + 15)
+		bounds = image.Rect(0, 0, 240, len(machine.layers)*30 + 15)
 		col = color.RGBA{200, 100, 0, 255}
 		images = make([]*image.Paletted, 0)
 		delays = make([]int, 0)
@@ -73,7 +74,7 @@ func (machine TuringMachine) Run(input string) ([]Layer, State, int) {
 
 			for index, layer := range machine.layers {
 				l, p := layer.ToString()
-				x, y := 0, (index + 1) * 30
+				x, y := 10, (index + 1) * 30
 				point := fixed.Point26_6{fixed.Int26_6(x * 64), fixed.Int26_6(y * 64)}
 				d := &font.Drawer{
 					Dst:  rgba,
@@ -103,9 +104,8 @@ func (machine TuringMachine) Run(input string) ([]Layer, State, int) {
 		iteration++
 	}
 	if nextExists {
-		fmt.Println("exceeded maximum iteration count. exiting.")
+		fmt.Println("Exceeded maximum iteration count. Exiting.")
 	}
-
 
 	return machine.layers, state, iteration;
 }
@@ -114,9 +114,13 @@ func generateGif(name string, images *[]*image.Paletted, delays *[]int) {
 	f, _ := os.OpenFile(name, os.O_WRONLY|os.O_CREATE, 0600)
 	(*delays)[len(*delays)-1] = 150
 	defer f.Close()
-	gif.EncodeAll(f, &gif.GIF{
+	err := gif.EncodeAll(f, &gif.GIF{
 		Image: *images,
 		Delay: *delays,
 	})
-	fmt.Printf("Saved GIF to %s.\n", name)
+	if err != nil {
+		log.Fatalf("Error encoding GIF: %v", err)
+	} else {
+		fmt.Printf("Saved GIF to %s.\n", name)
+	}
 }
